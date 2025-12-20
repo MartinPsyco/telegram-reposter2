@@ -1,6 +1,7 @@
 import os
 import re
 import asyncio
+from datetime import datetime, timedelta
 from telethon import TelegramClient, events
 from telethon.tl.types import MessageMediaPhoto, MessageMediaDocument
 
@@ -42,9 +43,15 @@ last_id = None
 @user_client.on(events.NewMessage(chats=CHANNELS))
 async def handler(event):
     global last_id
+
+    # Evita duplicados
     if event.id == last_id:
-        return  # ya procesado, evita duplicados
+        return
     last_id = event.id
+
+    # Ignora mensajes viejos (más de 1 minuto)
+    if event.message.date < (datetime.utcnow() - timedelta(minutes=1)):
+        return
 
     text_mod = adjust_text(event.raw_text)
 
