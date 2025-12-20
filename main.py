@@ -12,8 +12,8 @@ REPLACE_FROM = os.getenv("REPLACE_FROM")
 REPLACE_TO = os.getenv("REPLACE_TO")
 
 # Inicializa el cliente directamente con el bot token
-client = TelegramClient("bot", API_ID, API_HASH).start(bot_token=BOT_TOKEN)
 
+client = TelegramClient("reposter_session", API_ID, API_HASH).start(bot_token=BOT_TOKEN)
 # Handler: escucha mensajes en el canal y los reenvía al grupo
 @client.on(events.NewMessage(chats=CHANNEL_USERNAME))
 async def handler(event):
@@ -24,3 +24,4 @@ print("✅ Telegram Reposter online 🚀")
 
 # Mantiene el bot corriendo
 client.run_until_disconnected()
+
