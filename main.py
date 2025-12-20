@@ -1,5 +1,6 @@
 import os
 import re
+import asyncio
 from telethon import TelegramClient, events
 from telethon.tl.types import MessageMediaPhoto, MessageMediaDocument
 
@@ -35,9 +36,20 @@ user_client = TelegramClient("user", API_ID, API_HASH)
 # Cliente de bot (publica en grupo)
 bot_client = TelegramClient("bot", API_ID, API_HASH).start(bot_token=BOT_TOKEN)
 
+# Filtro anti-duplicados
+last_id = None
+
 @user_client.on(events.NewMessage(chats=CHANNELS))
 async def handler(event):
+    global last_id
+    if event.id == last_id:
+        return  # ya procesado, evita duplicados
+    last_id = event.id
+
     text_mod = adjust_text(event.raw_text)
+
+    # Pequeño delay para evitar floods
+    await asyncio.sleep(0.5)
 
     # Si es foto o documento (incluye videos)
     if isinstance(event.message.media, (MessageMediaPhoto, MessageMediaDocument)):
@@ -46,6 +58,8 @@ async def handler(event):
         # Texto puro o enlaces con preview
         if text_mod:
             await bot_client.send_message(GROUP_ID, text_mod)
+
+    print(f"✅ Mensaje {event.id} procesado y enviado")
 
 print("✅ User+Bot Reposter online ahora funcionando bien 🚀")
 
