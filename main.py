@@ -1,7 +1,7 @@
 import os
 import re
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from telethon import TelegramClient, events
 from telethon.tl.types import MessageMediaPhoto, MessageMediaDocument
 
@@ -50,7 +50,8 @@ async def handler(event):
     last_id = event.id
 
     # Ignora mensajes viejos (más de 1 minuto)
-    if event.message.date < (datetime.utcnow() - timedelta(minutes=1)):
+    now = datetime.now(timezone.utc)
+    if event.message.date < (now - timedelta(minutes=1)):
         return
 
     text_mod = adjust_text(event.raw_text)
