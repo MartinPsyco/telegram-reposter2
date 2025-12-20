@@ -1,6 +1,7 @@
 import os
 import re
 from telethon import TelegramClient, events
+from telethon.tl.types import MessageMediaPhoto, MessageMediaDocument
 
 # Variables de entorno
 API_ID = int(os.getenv("API_ID"))
@@ -38,13 +39,15 @@ bot_client = TelegramClient("bot", API_ID, API_HASH).start(bot_token=BOT_TOKEN)
 async def handler(event):
     text_mod = adjust_text(event.raw_text)
 
-    if event.message.media:
+    # Si es foto o documento (incluye videos)
+    if isinstance(event.message.media, (MessageMediaPhoto, MessageMediaDocument)):
         await bot_client.send_file(GROUP_ID, event.message.media, caption=text_mod)
     else:
+        # Texto puro o enlaces con preview
         if text_mod:
             await bot_client.send_message(GROUP_ID, text_mod)
 
-print("✅ User+Bot Reposter online 🚀")
+print("✅ User+Bot Reposter online ahora funcionando bien 🚀")
 
 user_client.start()
 user_client.run_until_disconnected()
